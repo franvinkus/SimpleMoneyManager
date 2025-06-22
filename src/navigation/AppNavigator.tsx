@@ -2,6 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from '../screens/splashscreen'; 
 import HomeScreen from '../screens/homescreen';     
+import CameraScreen from '../screens/camerascreen';
 import { RootStackParamList } from './types';       // Impor tipe rute
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -18,6 +19,11 @@ const AppNavigator = () => {
         name="Home"
         component={HomeScreen}
         options={{ title: 'Beranda', headerShown: false }} // Contoh: beri judul, sembunyikan header jika ingin custom
+      />
+      <Stack.Screen
+        name="Camera"
+        component={CameraScreen}
+        options={{ headerShown: false }} // atau true jika ingin ada header
       />
       {/* Di sini Anda bisa menambahkan Stack.Screen lain untuk halaman-halaman aplikasi Anda */}
       {/* <Stack.Screen name="ScanReceipt" component={ScanReceiptScreen} /> */}

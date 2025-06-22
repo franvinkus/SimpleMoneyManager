@@ -8,17 +8,16 @@ const HomeScreen = () => {
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
           <View style={styles.container}>
-            <Text style={styles.title}>Selamat Datang di Beranda!</Text>
-            <Text style={styles.subtitle}>Ini adalah halaman utama aplikasi Anda.</Text>
-            {/* Di sini Anda akan menaruh UI dan fungsionalitas utama aplikasi money manager Anda */}
+            <Text style={styles.title}>Masih kurang banyuak :D</Text>
+            <Text style={styles.subtitle}>Ini halaman utama.</Text>
             <View style={styles.contentBox}>
               <Text style={styles.content}>
-                Mulai kelola keuangan Anda. Anda bisa menambahkan fitur seperti:
+                fitur yang harus dibentuk
               </Text>
-              <Text style={styles.contentItem}>- Scan Resi (Fitur OCR Anda)</Text>
-              <Text style={styles.contentItem}>- Daftar Transaksi</Text>
-              <Text style={styles.contentItem}>- Kategori Pengeluaran</Text>
-              <Text style={styles.contentItem}>- Ringkasan Keuangan</Text>
+              <Text style={styles.contentItem}>- Scan Resi (Fitur OCR) kameranya udh jadi, bisa langsung test aja, hasilnya juga masih preview itu nanti gua mau lanjut</Text>
+              <Text style={styles.contentItem}>- View Summary</Text>
+              <Text style={styles.contentItem}>- Add money juga belum</Text>
+              <Text style={styles.contentItem}>- Buat Icon itu gua baru pake apa yang ada di laptop gua</Text>
             </View>
           </View>
         </ScrollView>

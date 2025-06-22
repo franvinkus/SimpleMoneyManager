@@ -13,7 +13,7 @@ const BottomBar = () => {
             <View style={[styles.container]}>
                 <View style={[styles.buttonRow]}>
                     <ButtonBottomBar screen='Splash' icon={CatIcon}/>
-                    <ButtonBottomBar screen='Splash' icon={CatIcon}/>
+                    <ButtonBottomBar screen='Camera' icon={CatIcon}/>
                     <ButtonBottomBar screen='Splash' icon={CatIcon}/>
                 </View>
             </View>
