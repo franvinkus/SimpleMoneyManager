@@ -1,7 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useRef, useState} from 'react';
-import { useRecordFromLocation } from 'react-admin';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Camera, useCameraDevices } from 'react-native-vision-camera';
 import { RootStackParamList } from '../../navigation/types';
@@ -38,12 +37,12 @@ const CameraScreen = () => {
     setPhotoPath(photo.path);
   };
 
-  if (device == null || !hasPermission) return <Text>Loading camera...</Text>;
+  if (device == null || !hasPermission) return <Text> Loading camera...</Text>;
 
     return (
         <View style={{ flex: 1 }}>
             <TouchableOpacity style={styles.backButton} onPress={() => Navigate.navigate('Home')}>
-                <Text style={{ }}>back</Text>
+                <Text style={[styles.backText]}>Back</Text>
             </TouchableOpacity>
 
             <Camera
@@ -58,9 +57,12 @@ const CameraScreen = () => {
             </TouchableOpacity>
 
             {photoPath && (
+              
                 <View style={styles.previewContainer}>
                     <Text style={{ color: 'white' }}>Preview:</Text>
-                    <Image source={{ uri: 'file://' + photoPath }} style={styles.previewImage} />
+                    <TouchableOpacity onPress={() => Navigate.navigate("Preview", {photoPath})}>
+                      <Image source={{ uri: 'file://' + photoPath }} style={styles.previewImage} />
+                    </TouchableOpacity>  
                 </View> 
             )}
     </View>
@@ -85,6 +87,9 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     left: 20,
   },
+  backText:{
+    fontSize: 15,
+  },
   previewContainer: {
     position: 'absolute',
     bottom: 120,
@@ -92,7 +97,7 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
   },
-previewImage: {
+  previewImage: {
     width: 100,
     height: 150,
     borderRadius: 8,

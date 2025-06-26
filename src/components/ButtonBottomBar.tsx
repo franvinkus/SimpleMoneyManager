@@ -6,14 +6,15 @@ import { NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 type props = {
     screen: keyof RootStackParamList; //sesuain di Types.tsx
+    params?: any;
     icon: ImageSourcePropType;
 }
 
-const ButtonBottomBar: React.FC<props> = ({screen, icon}) => {
+const ButtonBottomBar = ({screen, params, icon}: props) => {
     const Navigate = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
     return(
-        <TouchableOpacity onPress={() => Navigate.navigate(screen)} style={[style.button]}>
+        <TouchableOpacity onPress={() => Navigate.navigate(screen as any, params)} style={[style.button]}>
             <Image source={icon}  style={style.icon}/>
         </TouchableOpacity>
     )
