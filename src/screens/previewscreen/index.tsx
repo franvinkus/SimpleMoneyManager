@@ -19,6 +19,9 @@ const PreviewScreen = () => {
             {photoPath && (
             <Image source={{uri: 'file://' + photoPath}} style={[styles.image]}/>
             )}
+            <TouchableOpacity style={styles.acceptButton} onPress={() =>Navigate.navigate("OCR", {photoPath})}>
+                <Text style={{ color: 'white' }}>✔️</Text>
+            </TouchableOpacity>
         </View>
     )
 };
@@ -43,6 +46,15 @@ const styles = StyleSheet.create({
     image:{
         flex:1,
         width: "100%",
+    },
+    acceptButton: {
+        position: 'absolute',
+        bottom: 30,
+        right: 30,
+        alignSelf: 'center',
+        padding: 20,
+        backgroundColor: '#000000aa',
+        borderRadius: 40,
     },
 
 });

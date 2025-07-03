@@ -3,4 +3,5 @@ export type RootStackParamList = {
   Home: undefined;   
   Camera: undefined;
   Preview: {photoPath: string},
+  OCR: {photoPath: string},
 };
