@@ -55,6 +55,9 @@ const OcrScreen = () => {
       {resultText && (
         <View style={styles.resultBox}>
           <Text style={styles.resultText}>{resultText}</Text>
+          <TouchableOpacity style={styles.acceptButton} onPress={() =>Navigate.navigate("SCANRESULT", {resultText})}>
+              <Text style={{ color: 'white' }}>✔️</Text>
+          </TouchableOpacity>
         </View>
       )}
     </View>
@@ -100,6 +103,15 @@ const styles = StyleSheet.create({
     resultText: {
         color: 'white',
         fontSize: 14,
+    },
+    acceptButton: {
+        position: 'absolute',
+        bottom: 30,
+        right: 30,
+        alignSelf: 'center',
+        padding: 20,
+        backgroundColor: '#000000aa',
+        borderRadius: 40,
     },
 
 });

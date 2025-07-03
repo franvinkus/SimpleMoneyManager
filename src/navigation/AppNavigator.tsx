@@ -5,6 +5,7 @@ import HomeScreen from '../screens/homescreen';
 import CameraScreen from '../screens/camerascreen';
 import PreviewScreen from '../screens/previewscreen';
 import OcrScreen from '../screens/ocrscreen';
+import ScanResultScreen from '../screens/scanresultscreen';
 import { RootStackParamList } from './types';       // Impor tipe rute
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -25,17 +26,22 @@ const AppNavigator = () => {
       <Stack.Screen
         name="Camera"
         component={CameraScreen}
-        options={{ headerShown: false }} // atau true jika ingin ada header
+        options={{ headerShown: false }} 
       />
       <Stack.Screen
         name="Preview"
         component={PreviewScreen}
-        options={{ headerShown: false }} // atau true jika ingin ada header
+        options={{ headerShown: false }} 
       />
       <Stack.Screen
         name="OCR"
         component={OcrScreen}
-        options={{ headerShown: false }} // atau true jika ingin ada header
+        options={{ headerShown: false }} 
+      />
+      <Stack.Screen
+        name="SCANRESULT"
+        component={ScanResultScreen}
+        options={{ headerShown: false }} 
       />
       {/* Di sini Anda bisa menambahkan Stack.Screen lain untuk halaman-halaman aplikasi Anda */}
       {/* <Stack.Screen name="ScanReceipt" component={ScanReceiptScreen} /> */}

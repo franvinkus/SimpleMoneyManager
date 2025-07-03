@@ -4,4 +4,5 @@ export type RootStackParamList = {
   Camera: undefined;
   Preview: {photoPath: string},
   OCR: {photoPath: string},
+  SCANRESULT: {resultText: string},
 };
