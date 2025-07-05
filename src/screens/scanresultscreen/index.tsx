@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState} from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Camera, useCameraDevices } from 'react-native-vision-camera';
 import { RootStackParamList } from '../../navigation/types';
-import { NativeGesture } from 'react-native-gesture-handler/lib/typescript/handlers/gestures/nativeGesture';
+
 
 const ScanResultScreen = () => {
     const Navigate = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
