@@ -1,8 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-// TAMBAHAN: Impor library untuk memilih gambar dari galeri
+import { Image, StyleSheet, Text, TouchableOpacity, View, PermissionsAndroid, Platform, Alert } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { Camera, useCameraDevices } from 'react-native-vision-camera';
 import { RootStackParamList } from '../../navigation/types';
@@ -30,17 +29,65 @@ const CameraScreen = () => {
         getPermission();
     }, []);
 
+    const requestGalleryPermission = async () => {
+    if (Platform.OS === 'android') {
+        try {
+        // Untuk Android 13+ (API level 33+), gunakan READ_MEDIA_IMAGES
+        const grantedMedia = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+            {
+            title: 'Izin Galeri',
+            message: 'Aplikasi ini membutuhkan akses ke galeri Anda untuk memilih foto.',
+            buttonNeutral: 'Tanya Nanti',
+            buttonNegative: 'Batal',
+            buttonPositive: 'OK',
+            },
+        );
+
+        if (grantedMedia === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log('Izin READ_MEDIA_IMAGES diberikan');
+            return true;
+        } else {
+            const grantedStorage = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+            {
+                title: 'Izin Penyimpanan',
+                message: 'Aplikasi ini membutuhkan akses ke penyimpanan Anda untuk memilih foto.',
+                buttonNeutral: 'Tanya Nanti',
+                buttonNegative: 'Batal',
+                buttonPositive: 'OK',
+            },
+            );
+            if (grantedStorage === PermissionsAndroid.RESULTS.GRANTED) {
+                console.log('Izin READ_EXTERNAL_STORAGE diberikan');
+                return true;
+            } else {
+                console.log('Izin galeri/penyimpanan ditolak');
+                return false;
+            }
+        }
+        } catch (err) {
+        console.warn(err);
+        return false;
+        }
+    }
+    return true; 
+    };
+
     const takePhoto = async () => {
         if (camera.current == null) return;
         const photo = await camera.current.takePhoto({});
         console.log('Photo path:', photo.path);
-        // MODIFIKASI: Langsung navigasi ke Preview setelah mengambil foto
-        Navigate.navigate("Preview", { photoPath: photo.path });
-        // setPhotoPath(photo.path); // State ini tidak lagi diperlukan untuk menampilkan preview di sini
+        setPhotoPath(photo.path);
     };
 
     // TAMBAHAN: Fungsi untuk memilih gambar dari galeri
-    const handleSelectFromGallery = () => {
+    const handleSelectFromGallery = async () => {
+        const hasPermission = await requestGalleryPermission();
+        if (!hasPermission) {
+            Alert.alert('Izin Diperlukan', 'Aplikasi memerlukan akses ke galeri foto Anda untuk melanjutkan.');
+            return;
+        }
         launchImageLibrary({
             mediaType: 'photo',
             selectionLimit: 1,
@@ -90,20 +137,19 @@ const CameraScreen = () => {
                 </TouchableOpacity>
             </View>
 
-            {/* MODIFIKASI: Bagian preview di layar ini bisa dihilangkan karena kita langsung navigasi */}
-            {/* {photoPath && (
+           
+            {photoPath && (
                 <View style={styles.previewContainer}>
                     <Text style={{ color: 'white' }}>Preview:</Text>
                     <TouchableOpacity onPress={() => Navigate.navigate("Preview", { photoPath })}>
                         <Image source={{ uri: 'file://' + photoPath }} style={styles.previewImage} />
                     </TouchableOpacity>
                 </View>
-            )} */}
+            )} 
         </View>
     );
 };
 
-// MODIFIKASI: Penyesuaian style
 const styles = StyleSheet.create({
     buttonContainer: {
         position: 'absolute',
@@ -136,9 +182,19 @@ const styles = StyleSheet.create({
     backText: {
         fontSize: 15,
     },
-    // Style preview tidak lagi digunakan di sini
-    // previewContainer: { ... },
-    // previewImage: { ... },
+    previewContainer: {
+        position: 'absolute',
+        bottom: 120,
+        left: 0,
+        right: 0,
+        alignItems: 'center',
+    },
+    previewImage: {
+        width: 100,
+        height: 150,
+        borderRadius: 8,
+        marginTop: 5,
+    },
 });
 
 export default CameraScreen;
