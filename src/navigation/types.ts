@@ -4,5 +4,19 @@ export type RootStackParamList = {
   Camera: undefined;
   Preview: {photoPath: string},
   OCR: {photoPath: string},
-  SCANRESULT: {resultText: string},
+  SCANRESULT: { 
+    rawOcrText: string; 
+    storeName: string | null;
+    extractedDate: string | null;
+    extractedTotal: string | null;
+    extractedItems: ItemDetail[];
+  };
+};
+
+export type ItemDetail = {
+  name: string;
+  quantity?: number; 
+  unitPrice?: number; 
+  totalItemPrice?: number; 
+  rawLine: string;
 };
