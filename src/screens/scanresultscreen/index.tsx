@@ -1,27 +1,51 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useRef, useState} from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Camera, useCameraDevices } from 'react-native-vision-camera';
-import { RootStackParamList } from '../../navigation/types';
+import { RootStackParamList, ItemDetail } from '../../navigation/types';
 
-
+type ScanResultScreenRouteProp = RouteProp<RootStackParamList, 'SCANRESULT'>;
 const ScanResultScreen = () => {
     const Navigate = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-    const route = useRoute();
-    const {resultText} = route.params as {resultText: string};
+    const route = useRoute<ScanResultScreenRouteProp>();
+    const {
+        rawOcrText: initialRawOcrText,
+        extractedDate: initialExtractedDate,
+        extractedTotal: initialExtractedTotal,
+        extractedItems: initialExtractedItems
+    } = route.params;
+
+    const [rawOcrText, setRawOcrText] = useState<string>(initialRawOcrText || '');
+    const [editableDate, setEditableDate] = useState(initialExtractedDate || '');
+    const [editableTotal, setEditableTotal] = useState(initialExtractedTotal || '');
+    const [editableItems, setEditableItems] = useState<ItemDetail[]>(initialExtractedItems || []);
     
 
     return (
-        <View style={[styles.container]}>
-            <View style={[styles.titleContainer]}>
-                <Text style={[styles.title]}>
-                    Hasil Scan OCR:
-                </Text>
-            </View>
-            <View style={[styles.resultContainer]}>
-                <Text style={styles.resultText}>{resultText}</Text>
-            </View>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
+            <ScrollView>
+            <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>
+                {rawOcrText || 'Tidak ada teks uji coba.'}
+            </Text>
+            <Text style={{ color: 'black', fontSize: 16, marginTop: 10 }}>
+                Tanggal: {editableDate || 'N/A'}
+            </Text>
+            <Text style={{ color: 'black', fontSize: 16 }}>
+                Total: {editableTotal || 'N/A'}
+            </Text>
+            <Text style={{ color: 'black', fontSize: 18, fontWeight: 'bold', marginTop: 20 }}>Items:</Text>
+            {editableItems.length > 0 ? (
+                editableItems.map((item, index) => (
+                    <Text key={index} style={{ color: 'black', fontSize: 14, marginBottom: 5 }}>
+                        - {item.name || ''} (Qty: {item.quantity?.toString() || 'N/A'}, Unit: {item.unitPrice?.toString() || 'N/A'}, Total: {item.totalItemPrice?.toString() || 'N/A'})
+                    </Text>
+                ))
+            ) : (
+                <Text style={{ color: 'black', fontSize: 14 }}>Tidak ada item terdeteksi.</Text>
+            )}
+
+            </ScrollView>
         </View>
     )
 };
@@ -53,9 +77,30 @@ const styles = StyleSheet.create({
         borderColor: "black",
         padding: 10,
     },
-    resultText: {
-        color: 'black',
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginTop: 15,
+        marginBottom: 5,
+        color: '#555',
+    },
+    rawOcrTextDisplay: {
+        fontSize: 14,
+        color: '#777',
+        fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    },
+    extractedData: {
         fontSize: 16,
+        marginBottom: 5,
+        color: '#333',
+    },
+    extractedItem: {
+        fontSize: 14,
+        marginBottom: 3,
+        color: '#444',
+    },
+    backButtonText:{
+        fontSize: 15
     },
 
 
