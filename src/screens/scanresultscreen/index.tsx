@@ -1,5 +1,3 @@
-// src/screens/scanresultscreen/index.tsx
-
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -40,6 +38,7 @@ const ScanResultScreen = () => {
           {editableItems.length > 0 ? (
             editableItems.map((item, index) => (
               <View key={index} style={styles.item}>
+                <Text>{item.quantity?.toString() || 'N/A'}x</Text>
                 <Text style={styles.itemName} numberOfLines={2}>{item.name}</Text>
                 <Text style={styles.itemPrice}>
                   Rp {item.totalItemPrice?.toLocaleString('id-ID') || 'N/A'}

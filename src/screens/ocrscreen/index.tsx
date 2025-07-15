@@ -1,14 +1,7 @@
-// OcrScreen.tsx
-
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-<<<<<<< Updated upstream
-import React, { useEffect, useRef, useState} from 'react';
-import { ActivityIndicator, Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-=======
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
->>>>>>> Stashed changes
 import { RootStackParamList } from '../../navigation/types';
 import { recognizeReceiptText } from '../../utils/ocrUtils';
 import { parseReceiptText } from '../../utils/receiptParser';
@@ -34,106 +27,6 @@ const OcrScreen = () => {
 
     const handleOCR = async () => {
         setIsLoading(true);
-<<<<<<< Updated upstream
-        setResultText(null); // Clear previous result
-        try {
-            const mlKitResult = await recognizeReceiptText(photoPath);
-            setResultText(mlKitResult);
-        } catch (error) {
-            Alert.alert('OCR Gagal', `Terjadi kesalahan saat memproses gambar: ${(error as Error).message}`);
-            setResultText('Terjadi kesalahan saat memproses gambar.');
-        } finally {
-        setIsLoading(false);
-        }
-    };
-
-    return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        onPress={() => Navigate.navigate('Camera')}
-        style={styles.backButton}
-      >
-        <Text style={styles.backText}>Back</Text>
-      </TouchableOpacity>
-
-      {photoPath && (
-        <Image
-          source={{ uri: 'file://' + photoPath }}
-          style={styles.image}
-        />
-      )}
-
-      <TouchableOpacity style={styles.button} onPress={handleOCR} disabled={isLoading}>
-        <Text style={styles.buttonText}>
-          {isLoading ? 'Memproses...' : 'Scan dengan OCR'}
-        </Text>
-      </TouchableOpacity>
-
-      {isLoading && <ActivityIndicator size="large" color="#ffffff" style={{ marginTop: 10 }} />}
-
-      {resultText && (
-        <View style={styles.resultBox}>
-          <Text style={styles.resultText}>{resultText}</Text>
-          <TouchableOpacity style={styles.acceptButton} onPress={() =>Navigate.navigate("SCANRESULT", {resultText})}>
-              <Text style={{ color: 'white' }}>✔️</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'black',
-    },
-    backButton:{
-        zIndex: 10,
-        position: 'absolute',
-        padding: 20,
-        backgroundColor: "#F8CEA8",
-        top: 20,
-        borderRadius: 10,
-        left: 20,
-    },
-    backText:{
-        fontSize: 15
-    },
-    image:{
-        flex:1,
-        width: "100%",
-    },
-    button: {
-        backgroundColor: '#F8CEA8',
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 10,
-    },
-    buttonText: {
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    resultBox: {
-        marginTop: 20,
-        paddingHorizontal: 20,
-    },
-    resultText: {
-        color: 'white',
-        fontSize: 14,
-    },
-    acceptButton: {
-        position: 'absolute',
-        bottom: 30,
-        right: 30,
-        alignSelf: 'center',
-        padding: 20,
-        backgroundColor: '#000000aa',
-        borderRadius: 40,
-    },
-
-=======
         setResultText(null);
         try {
             const mlKitResult = await recognizeReceiptText(photoPath);
@@ -242,7 +135,6 @@ const styles = StyleSheet.create({
     resultTitle: { color: '#F8CEA8', fontSize: 16, fontWeight: 'bold', marginBottom: 10 },
     resultText: { color: 'white', fontSize: 14, fontFamily: 'monospace' },
     acceptButton: { position: 'absolute', bottom: 15, right: 15, padding: 15, backgroundColor: '#000000aa', borderRadius: 30 },
->>>>>>> Stashed changes
 });
 
 export default OcrScreen;
