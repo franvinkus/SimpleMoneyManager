@@ -6,8 +6,9 @@ export type RootStackParamList = {
   OCR: {photoPath: string},
   SCANRESULT: { 
     rawOcrText: string; 
-    extractedDate: string;
-    extractedTotal: string;
+    storeName: string | null;
+    extractedDate: string | null;
+    extractedTotal: string | null;
     extractedItems: ItemDetail[];
   };
 };

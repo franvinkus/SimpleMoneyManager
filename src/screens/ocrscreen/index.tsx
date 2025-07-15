@@ -1,118 +1,83 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useEffect, useRef, useState} from 'react';
-import { ActivityIndicator, Alert, Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { RootStackParamList, ItemDetail } from '../../navigation/types';
+import React, { useState } from 'react';
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { RootStackParamList } from '../../navigation/types';
 import { recognizeReceiptText } from '../../utils/ocrUtils';
+import { parseReceiptText } from '../../utils/receiptParser';
 
+interface TextElement {
+  text: string;
+  boundingBox: [number, number, number, number]; 
+}
+interface TextLine {
+  elements: TextElement[];
+}
+interface TextBlock {
+  lines: TextLine[];
+}
 
 const OcrScreen = () => {
     const Navigate = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const route = useRoute();
-    const {photoPath} = route.params as {photoPath: string};
+    const { photoPath } = route.params as { photoPath: string };
 
     const [isLoading, setIsLoading] = useState(false);
     const [ocrError, setOcrError] = useState<string | null>(null);
     const [rawOcrText, setRawOcrText] = useState<string>(''); //teks OCR mentah
 
-    // State untuk data yang sudah diekstrak
-    const [extractedDate, setExtractedDate] = useState<string>('');
-    const [extractedTotal, setExtractedTotal] = useState<string>('');
-    const [extractedItems, setExtractedItems] = useState<ItemDetail[]>([]);
+    const handleOCR = async () => {
+        setIsLoading(true);
+        setResultText(null);
+        try {
+            const mlKitResult = await recognizeReceiptText(photoPath);
 
+            if (mlKitResult && mlKitResult.blocks && mlKitResult.blocks.length > 0) {
 
-     const extractDataFromReceipt = (text: string) => {
-        let extractedDate = '';
-        let extractedTotal = '';
-        let extractedItems: ItemDetail[] = [];
-
-        const lines = text.split('\n');
-
-        // --- Ekstraksi Total ---
-        const moneyPatternPure = /(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{1,2})?)/g; 
-
-        let bestTotalCandidateValue: number = 0; 
-        let bestTotalCandidateRaw: string = ''; 
-
-        //Keyword
-        const totalKeywords = ["total", "subtotal", "amount due", "grand total", "jumlah"]; 
-        const negativeTotalKeywords = [
-            "kembalian", "discount", "diskon", "hemat", "bayar", "tunai", "dpp", "ppn", "pajak", "voucher",
-            "debit bca", "credit card", "cash", "cashier", "thank you", "please come again", "closed",
-            "tuna i", "tuna i :" // Tambahkan variasi OCR error jika perlu, seperti "tunai :"
-        ];
-
-        for (let i = lines.length - 1; i >= 0; i--) {
-            const line = lines[i];
-            const lowerCaseLine = line.toLowerCase();
-
-            // Check for negative keywords
-            const containsNegativeKeyword = negativeTotalKeywords.some(keyword => lowerCaseLine.includes(keyword)); 
-            const containsValidTotalKeyword = totalKeywords.some(keyword => lowerCaseLine.includes(keyword)); 
-            
-            console.log(`[Total Extraction] Processing Line ${i}: "${line}"`);
-            console.log(`  -> Lowercased: "${lowerCaseLine}"`);
-            console.log(`  -> Contains Negative Keyword: ${containsNegativeKeyword}`);
-            console.log(`  -> Contains Valid Total Keyword: ${containsValidTotalKeyword}`);
-            console.log(`  -> Will Skip: ${containsNegativeKeyword && !containsValidTotalKeyword}`);
-
-            if (containsNegativeKeyword && !containsValidTotalKeyword) {
-                console.log(`  -> SKIPPING line ${i} due to negative keyword.`);
-                continue; // Skip this line entirely
-            }
-
-            // Bagian ini akan mencari angka di baris yang TIDAK dilewati oleh filter di atas
-            const lineMoneyMatches = [...line.matchAll(moneyPatternPure)];
-
-            if (lineMoneyMatches.length === 0) {
-                continue;
-            }
-
-            const numbersInLine = lineMoneyMatches.map(m => {
-                let rawNum = m[1];
-                rawNum = rawNum.replace(/,/g, ''); 
-                if (rawNum.includes('.') && rawNum.indexOf('.') < rawNum.length - 3) {
-                    rawNum = rawNum.replace(/\./g, '');
-                } else if (rawNum.includes(',')) {
-                    rawNum = rawNum.replace(/,/g, '.');
-                }
-                return parseFloat(rawNum);
-            }).filter(n => !isNaN(n) && n > 0); 
-
-            if (numbersInLine.length > 0) {
-                const largestInLine = Math.max(...numbersInLine);
-
-                if (containsValidTotalKeyword) { // Baris ini mengandung kata kunci total yang valid
-                    if (largestInLine > bestTotalCandidateValue) {
-                        bestTotalCandidateValue = largestInLine;
-                        bestTotalCandidateRaw = largestInLine.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                        // Opsional: break jika total sangat kuat
-                        // if ((lowerCaseLine.includes("total") || lowerCaseLine.includes("grand total")) && largestInLine >= 10000) break;
-                    }
-                } else if (i >= lines.length - 7) { // 7 baris terakhir, tidak ada keyword total valid
-                    if (largestInLine > bestTotalCandidateValue && largestInLine >= 1000) { 
-                        bestTotalCandidateValue = largestInLine;
-                        bestTotalCandidateRaw = largestInLine.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const allElements: TextElement[] = [];
+                for (const block of mlKitResult.blocks) {
+                    for (const line of block.lines) {
+                        allElements.push(...(line.elements || []));
                     }
                 }
-            }
-        }
-        extractedTotal = bestTotalCandidateRaw;
+                const groupedLines = new Map<number, TextElement[]>();
+                const Y_TOLERANCE = 10; 
 
-        // --- Ekstraksi Tanggal ---
-        const fullDateRegex = /\b(\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{2,4}\s+\d{1,2}:\d{2}:\d{2})\b/i;
-        const numericDateRegex = /\b(\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}|\d{4}[-/.]\d{1,2}[-/.]\d{1,2})\b/;
+                allElements.forEach(element => {
+                    const yPos = element.boundingBox[1];
+                    let foundGroup = false;
+                    for (const key of groupedLines.keys()) {
+                        if (Math.abs(key - yPos) < Y_TOLERANCE) {
+                            groupedLines.get(key)?.push(element);
+                            foundGroup = true;
+                            break;
+                        }
+                    }
+                    if (!foundGroup) {
+                        groupedLines.set(yPos, [element]);
+                    }
+                });
 
-        let dateMatch = text.match(fullDateRegex);
-        if (dateMatch && dateMatch[1]) {
-            extractedDate = dateMatch[1];
-        } else {
-            dateMatch = text.match(numericDateRegex);
-            if (dateMatch && dateMatch[1]) {
-                extractedDate = dateMatch[1];
+                const sortedLines = Array.from(groupedLines.entries())
+                    .sort((a, b) => a[0] - b[0])
+                    .map(([, elements]) =>
+                        elements
+                            .sort((a, b) => a.boundingBox[0] - b.boundingBox[0]) 
+                            .map(el => el.text)
+                            .join(' ')
+                    );
+
+                const reconstructedText = sortedLines.join('\n');
+                setResultText(reconstructedText);
+
             } else {
-                extractedDate = '';
+                setResultText(mlKitResult.text || 'Tidak ada teks yang dapat dideteksi.');
             }
+        } catch (error) {
+            Alert.alert('OCR Gagal', `Terjadi kesalahan: ${(error as Error).message}`);
+        } finally {
+            setIsLoading(false);
+
         }
 
         // --- Logika Ekstraksi Item Detil ---
@@ -206,192 +171,62 @@ const OcrScreen = () => {
         return { date: extractedDate, total: extractedTotal, items: extractedItems };
     };
 
-
-  useEffect(() => {
-        const performOcrAndPostProcessing = async () => {
-            if (!photoPath) {
-                setOcrError("Tidak ada foto untuk diproses.");
-                setIsLoading(false);
-                return;
-            }
-
-            setIsLoading(true);
-            setOcrError(null);
-            try {
-                // LANGKAH 1: Lakukan OCR untuk mendapatkan teks mentah
-                const mlKitResult = await recognizeReceiptText(photoPath);
-                setRawOcrText(mlKitResult);
-
-                // LANGKAH 2: Lakukan Post-Processing (ekstraksi data) dari teks mentah
-                const { date, total, items } = extractDataFromReceipt(mlKitResult);
-
-                // LANGKAH 3: Set state lokal untuk tampilan preview di OcrScreen (opsional, jika Anda ingin user melihat preview dulu)
-                setExtractedDate(date);
-                setExtractedTotal(total);
-                setExtractedItems(items);
-
-                // LANGKAH 4: Navigasi ke SCANRESULT dengan semua data yang sudah diekstrak
-                Navigate.navigate('SCANRESULT', {
-                    rawOcrText: mlKitResult || '', 
-                    extractedDate: date || '',     
-                    extractedTotal: total || '',
-                    extractedItems: items || [],
-                });
-
-            } catch (error) {
-                console.error('Error during OCR or post-processing:', error);
-                setOcrError(`Gagal memproses gambar: ${(error as Error).message}`);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        performOcrAndPostProcessing();
-    }, [photoPath]); // Jalankan efek ini saat photoPath berubah
-
+    const handleAccept = () => {
+        if (!resultText) return;
+        const parsedData = parseReceiptText(resultText);
+        Navigate.navigate("SCANRESULT", {
+            rawOcrText: resultText,
+            storeName: parsedData.storeName,
+            extractedDate: parsedData.date,
+            extractedTotal: parsedData.total,
+            extractedItems: parsedData.items,
+        });
+    };
 
     return (
       <View style={styles.container}>
-        <TouchableOpacity
-          onPress={() => Navigate.goBack()}
-          style={styles.backButton}
-        >
+        <TouchableOpacity onPress={() => Navigate.goBack()} style={styles.backButton}>
           <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
-
         {photoPath && (
-          <Image
-            source={{ uri: 'file://' + photoPath }}
-            style={styles.image}
-          />
+          <Image source={{ uri: 'file://' + photoPath }} style={styles.image} resizeMode="contain" />
         )}
-    </View>
-  );
+        <View style={styles.bottomContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleOCR} disabled={isLoading}>
+            <Text style={styles.buttonText}>
+              {isLoading ? 'Memproses...' : 'Scan Struk Ini'}
+            </Text>
+          </TouchableOpacity>
+          {isLoading && <ActivityIndicator size="large" color="#ffffff" style={{ marginTop: 20 }} />}
+          {resultText && (
+            <ScrollView style={styles.resultScrollView}>
+              <View style={styles.resultBox}>
+                <Text style={styles.resultTitle}>Hasil Teks OCR:</Text>
+                <Text style={styles.resultText}>{resultText}</Text>
+                <TouchableOpacity style={styles.acceptButton} onPress={handleAccept}>
+                  <Text style={{ color: 'white', fontSize: 24 }}>✔️</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          )}
+        </View>
+      </View>
+    );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'black',
-    },
-    backButton:{
-        zIndex: 10,
-        position: 'absolute',
-        padding: 20,
-        backgroundColor: "#F8CEA8",
-        top: 20,
-        borderRadius: 10,
-        left: 20,
-    },
-    backText:{
-        fontSize: 15
-    },
-    image:{
-        flex:1,
-        width: "100%",
-    },
-    button: {
-        backgroundColor: '#F8CEA8',
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 10,
-    },
-    buttonText: {
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    resultBox: {
-        marginTop: 20,
-        paddingHorizontal: 20,
-    },
-    resultText: {
-        color: 'white',
-        fontSize: 14,
-    },
-    acceptButton: {
-        position: 'absolute',
-        bottom: 30,
-        right: 30,
-        alignSelf: 'center',
-        padding: 20,
-        backgroundColor: '#000000aa',
-        borderRadius: 40,
-    },
-    overlay: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 99,
-    },
-    overlayText: {
-        color: 'white',
-        marginTop: 10,
-        fontSize: 18,
-        textAlign: 'center',
-    },
-    errorTextOverlay: {
-        color: 'red',
-        fontSize: 18,
-        textAlign: 'center',
-        marginBottom: 20,
-    },
-    retryButton: {
-        backgroundColor: '#F8CEA8',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 8,
-    },
-    retryButtonText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: 'black',
-    },
-    resultDisplayBox: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: 'rgba(0,0,0,0.8)',
-        padding: 20,
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        maxHeight: '50%', // Batasi tinggi box hasil
-        zIndex: 50,
-    },
-    resultDisplayTextTitle: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    resultDisplayTextScroll: {
-        maxHeight: 150, // Tinggi scrollable area untuk teks mentah
-    },
-    resultDisplayText: {
-        color: '#eee',
-        fontSize: 14,
-        fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    },
-    extractedSummary: {
-        color: '#F8CEA8', // Warna cerah untuk summary
-        fontSize: 16,
-        marginTop: 15,
-        fontWeight: 'bold',
-    },
-    useResultButton: {
-        backgroundColor: '#4CAF50',
-        padding: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    useResultButtonText: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
+    container: { flex: 1, backgroundColor: 'black', justifyContent: 'space-between' },
+    backButton:{ zIndex: 10, position: 'absolute', padding: 20, backgroundColor: "rgba(248, 206, 168, 0.8)", top: 40, borderRadius: 10, left: 20 },
+    backText:{ fontSize: 15, fontWeight: 'bold' },
+    image:{ flex: 1, width: "100%", height: "60%" },
+    bottomContainer: { padding: 20, backgroundColor: '#1c1c1c', borderTopLeftRadius: 20, borderTopRightRadius: 20 },
+    button: { backgroundColor: '#F8CEA8', paddingVertical: 15, borderRadius: 10, alignItems: 'center' },
+    buttonText: { fontSize: 18, fontWeight: '600', color: '#333' },
+    resultScrollView: { maxHeight: 200, marginTop: 20 },
+    resultBox: { backgroundColor: '#2a2a2a', padding: 15, borderRadius: 10 },
+    resultTitle: { color: '#F8CEA8', fontSize: 16, fontWeight: 'bold', marginBottom: 10 },
+    resultText: { color: 'white', fontSize: 14, fontFamily: 'monospace' },
+    acceptButton: { position: 'absolute', bottom: 15, right: 15, padding: 15, backgroundColor: '#000000aa', borderRadius: 30 },
 
 });
 
