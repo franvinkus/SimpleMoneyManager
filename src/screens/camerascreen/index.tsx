@@ -32,7 +32,6 @@ const CameraScreen = () => {
     const requestGalleryPermission = async () => {
     if (Platform.OS === 'android') {
         try {
-        // Untuk Android 13+ (API level 33+), gunakan READ_MEDIA_IMAGES
         const grantedMedia = await PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
             {
@@ -81,7 +80,6 @@ const CameraScreen = () => {
         setPhotoPath(photo.path);
     };
 
-    // TAMBAHAN: Fungsi untuk memilih gambar dari galeri
     const handleSelectFromGallery = async () => {
         const hasPermission = await requestGalleryPermission();
         if (!hasPermission) {
@@ -99,8 +97,6 @@ const CameraScreen = () => {
             } else if (response.assets && response.assets.length > 0) {
                 const selectedImage = response.assets[0];
                 if (selectedImage.uri) {
-                    // Langsung navigasi ke layar Preview dengan URI gambar yang dipilih
-                    // URI dari image-picker sudah dalam format yang bisa langsung dipakai
                     Navigate.navigate("Preview", { photoPath: selectedImage.uri });
                 }
             }
@@ -124,14 +120,14 @@ const CameraScreen = () => {
                 photo={true}
             />
 
-            {/* MODIFIKASI: Container untuk tombol-tombol di bawah */}
+            
             <View style={styles.buttonContainer}>
-                {/* Tombol ambil foto */}
+                
                 <TouchableOpacity style={styles.captureButton} onPress={takePhoto}>
                     <Text style={{ fontSize: 30 }}>📸</Text>
                 </TouchableOpacity>
 
-                {/* TAMBAHAN: Tombol untuk unggah dari galeri */}
+               
                 <TouchableOpacity style={styles.galleryButton} onPress={handleSelectFromGallery}>
                     <Text style={{ fontSize: 30 }}>🖼️</Text>
                 </TouchableOpacity>
@@ -163,9 +159,9 @@ const styles = StyleSheet.create({
     captureButton: {
         padding: 20,
         backgroundColor: '#000000aa',
-        borderRadius: 50, // Dibuat bulat sempurna
+        borderRadius: 50, 
     },
-    galleryButton: { // Style untuk tombol galeri
+    galleryButton: { 
         padding: 15,
         backgroundColor: '#000000aa',
         borderRadius: 40,
@@ -175,7 +171,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F8CEA8',
         position: 'absolute',
         zIndex: 10,
-        top: 40, // Posisi disesuaikan
+        top: 40, 
         borderRadius: 15,
         left: 20,
     },

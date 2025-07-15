@@ -4,6 +4,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { RootStackParamList, ItemDetail } from '../../navigation/types'; 
 type ScanResultScreenRouteProp = RouteProp<RootStackParamList, 'SCANRESULT'>;
 
+
 const ScanResultScreen = () => {
   const route = useRoute<ScanResultScreenRouteProp>();
 
