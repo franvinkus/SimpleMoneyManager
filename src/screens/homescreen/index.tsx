@@ -1,26 +1,92 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import React, { useCallback, useState, useEffect} from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Alert } from 'react-native';
 import BottomBar from "../../components/BottomBar";
+import { useModal } from '../../context/modalContext';
+import AddMoney from '../../components/modals/AddMoney';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const BALANCE_STORAGE_KEY = 'user_initial_balance';
 const HomeScreen = () => {
+  const [initialAmount, setInitialAmount] = useState<number>(0); 
+  const { 
+    isAddMoneyModalRequested, 
+    onAddMoneyModalClose, 
+    onAddMoneyModalSubmit,
+    registerAddMoneyHandler, 
+    unregisterAddMoneyHandler 
+  } = useModal();
+
+  useEffect(() => {
+    const loadBalance = async () => {
+      try{
+        const storedAmount = await AsyncStorage.getItem(BALANCE_STORAGE_KEY);
+        if(storedAmount != null){
+          setInitialAmount(parseFloat(storedAmount));
+        }
+      }
+      catch (error){
+        console.error('Failed to load initial balance from AsyncStorage:', error);
+      }
+    }
+
+    loadBalance();
+  }, []);
+
+  const saveAmount = async (amount:number) =>{
+    try{
+      await AsyncStorage.setItem(BALANCE_STORAGE_KEY, amount.toString());
+      console.log("berhasil save", amount);
+    }
+    catch (error){
+      console.log("error tidak bisa save", error);
+    }
+  }
+
+  const handleAddMoney = useCallback((amount: number) => {
+    setInitialAmount(prevAmount => {
+      const newAmount = prevAmount + amount;
+      saveAmount(newAmount);
+      Alert.alert("Saldo berhasil ditambah", `saldo anda sekarang: Rp ${newAmount.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2})}`);
+      return newAmount;
+    })
+  }, []);
+
+  useEffect(() => {
+    registerAddMoneyHandler(handleAddMoney); 
+
+    return () => {
+      unregisterAddMoneyHandler(handleAddMoney); 
+    };
+  }, [handleAddMoney, registerAddMoneyHandler, unregisterAddMoneyHandler]);
+
+  
   return (
     <View style={{flex: 1}}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>
           <View style={styles.container}>
-            <Text style={styles.title}>Masih kurang banyuak :D</Text>
-            <Text style={styles.subtitle}>Ini halaman utama.</Text>
+            <Text style={styles.title}>Welcome to MaNey</Text>
+            <Text style={styles.subtitle1}>Amount:</Text>
+            <Text style={styles.subtitle}>Rp. {initialAmount.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
             <View style={styles.contentBox}>
               <Text style={styles.content}>
                 fitur yang harus dibentuk
               </Text>
-              <Text style={styles.contentItem}>- Scan Resi (Fitur OCR) kameranya udh jadi, bisa langsung test aja, hasilnya juga masih preview itu nanti gua mau lanjut</Text>
               <Text style={styles.contentItem}>- View Summary</Text>
               <Text style={styles.contentItem}>- Add money juga belum</Text>
               <Text style={styles.contentItem}>- Buat Icon itu gua baru pake apa yang ada di laptop gua</Text>
             </View>
           </View>
         </ScrollView>
+
+        {isAddMoneyModalRequested && ( 
+        <AddMoney
+          isInvisible={true} 
+          onClose={onAddMoneyModalClose} 
+          onAddMoney={onAddMoneyModalSubmit}
+        />
+      )}
+
       </SafeAreaView>
       <BottomBar/>
     </View>
@@ -47,6 +113,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     color: '#263238',
+  },
+  subtitle1: {
+    fontSize: 18,
+    color: '#455a64',
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 18,
