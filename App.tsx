@@ -5,12 +5,13 @@ import {
     ActivityIndicator, 
     Alert, 
     Image, 
-    StyleSheet, // <<< PASTIKAN INI DARI 'react-native'
-    Text,       // <<< PASTIKAN INI DARI 'react-native'
+    StyleSheet, 
+    Text,       
     TouchableOpacity, 
-    View        // <<< PASTIKAN INI DARI 'react-native'
-} from 'react-native'; // <<< SUMBER UTAMA KOMPONEN RN
+    View        
+} from 'react-native'; 
 import firebase from '@react-native-firebase/app';
+import { ModalProvider } from './src/context/modalContext';
 
 
 const App = () => {
@@ -58,10 +59,12 @@ const App = () => {
   return (
     // NavigationContainer manages your app's navigation tree.
     // All navigators must be wrapped inside a NavigationContainer.
-    <NavigationContainer>
-      {/* AppNavigator defines the stack of screens for your application. */}
-      <AppNavigator />
-    </NavigationContainer>
+    <ModalProvider>
+      <NavigationContainer>
+        {/* AppNavigator defines the stack of screens for your application. */}
+        <AppNavigator />
+      </NavigationContainer>
+    </ModalProvider>
   );
 };
 

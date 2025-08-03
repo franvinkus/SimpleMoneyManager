@@ -22,7 +22,7 @@ export const parseReceiptText = (rawText: string): ParsedReceiptData => {
   const itemAndPriceRegex = /^\d+\s+(.+)\s+([\d.,]+)$/;
   const itemNameOnlyRegex = /^\d+\s+(.+)$/;
   const priceOnlyRegex = /^([\d.,]+)$/;
-  const dateRegex = /(\d{1,2}\s\w+\s\d{2})\s\d{2}:\d{2}:\d{2}/;
+  const dateRegex = /(\d{1,2}\s\w{3,4}\s\d{2,4})\s\d{2}:\d{2}:\d{2}|(\d{1,2}[./-]\d{1,2}[./-]\d{2,4})/;
   const totalRegex = /Total\s*:?\s*([\d,.]+)/i;
   const subtotalRegex = /Subtotal/i;
 
@@ -30,18 +30,20 @@ export const parseReceiptText = (rawText: string): ParsedReceiptData => {
     const trimmedLine = line.trim();
     if (!trimmedLine) continue;
 
+    const lowerCaseLine = trimmedLine.toLowerCase();
+
     const dateMatch = trimmedLine.match(dateRegex);
     if (dateMatch && !date) {
       date = dateMatch[1];
       continue;
     }
 
-    if (subtotalRegex.test(trimmedLine) || totalRegex.test(trimmedLine)) {
+    if (subtotalRegex.test(lowerCaseLine) || totalRegex.test(lowerCaseLine)) {
         isItemSection = false;
         
-        const totalMatch = trimmedLine.match(totalRegex);
-        if (totalMatch) {
-            total = totalMatch[0].replace(/[.,]/g, '');
+        const totalMatch = lowerCaseLine.match(totalRegex);
+        if (totalMatch && totalMatch[1]) {
+            total = totalMatch[1].replace(/[.,]/g, '');
         }
         continue;
     }
