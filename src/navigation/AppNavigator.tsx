@@ -6,6 +6,7 @@ import CameraScreen from '../screens/camerascreen';
 import PreviewScreen from '../screens/previewscreen';
 import OcrScreen from '../screens/ocrscreen';
 import ScanResultScreen from '../screens/scanresultscreen';
+import CalendarScreen from '../screens/calendarscreen';
 import { RootStackParamList } from './types';       // Impor tipe rute
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -43,8 +44,11 @@ const AppNavigator = () => {
         component={ScanResultScreen}
         options={{ headerShown: false }} 
       />
-      {/* Di sini Anda bisa menambahkan Stack.Screen lain untuk halaman-halaman aplikasi Anda */}
-      {/* <Stack.Screen name="ScanReceipt" component={ScanReceiptScreen} /> */}
+      <Stack.Screen
+        name="Calendar"
+        component={CalendarScreen}
+        options={{ headerShown: false }} 
+      />
     </Stack.Navigator>
   );
 };
