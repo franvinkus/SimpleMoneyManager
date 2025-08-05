@@ -24,10 +24,10 @@ export default ButtonBottomBar;
 
 const style = StyleSheet.create({
     button: {
-    padding: 10, // memberi ruang di sekeliling icon
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+        padding: 10, // memberi ruang di sekeliling icon
+        alignItems: 'center',
+        justifyContent: 'center',
+     },
     icon:{
         height: 80,
         width: 80,
