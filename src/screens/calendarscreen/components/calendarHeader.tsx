@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Directions } from "react-native-gesture-handler";
 
 
 const CalendarHeader = () => {
@@ -47,9 +48,18 @@ const CalendarHeader = () => {
             </View>
 
             <View style={[styles.summaries]}>
-                    <Text>Income:  Rp XXX</Text>
-                    <Text>Expenses:  Rp YYY</Text>
-                    <Text>Total:  Rp ZZZ</Text>
+                <View style={{flexDirection: "column", alignItems:"center", justifyContent: "center"}}>
+                    <Text style={{color:"green"}}>Income: </Text>
+                    <Text style={{color:"white"}}> Rp XXX</Text>
+                </View>
+                <View style={{flexDirection: "column", alignItems:"center", justifyContent: "center"}}>
+                    <Text style={{color:"red"}}>Expenses: </Text>
+                    <Text style={{color:"white"}}> Rp YYY</Text>
+                </View>
+                <View style={{flexDirection: "column", alignItems:"center", justifyContent: "center"}}>
+                    <Text style={{color:"white"}}>Total: </Text>
+                    <Text style={{color:"white"}}> Rp ZZZ</Text>
+                </View>
             </View>
         </View>
     );
