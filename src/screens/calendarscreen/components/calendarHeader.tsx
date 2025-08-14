@@ -2,16 +2,19 @@ import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Directions } from "react-native-gesture-handler";
 
+interface CalendarHeaderProps {
+    currentView: 'daily' | 'monthly';
+    onViewChange: (view: 'daily' | 'monthly') => void;
+}
 
-const CalendarHeader = () => {
-    const [currentCalendar, setCurrentCalendar] = useState<'daily' | 'monthly'>("daily");
+const CalendarHeader: React.FC<CalendarHeaderProps> = ({currentView, onViewChange}) => {
 
     const handleDaily = () =>{
-        setCurrentCalendar('daily');
+        onViewChange('daily');
     }
 
     const handleMonthly = () =>
-        setCurrentCalendar('monthly');
+        onViewChange('monthly');
 
     return (
         <View style={styles.mainBackground}>
@@ -19,11 +22,11 @@ const CalendarHeader = () => {
                 <TouchableOpacity
                 onPress={handleDaily}
                 style={[styles.tabButton,
-                    currentCalendar === 'daily' && styles.activeTab
+                    currentView === 'daily' && styles.activeTab
                 ]}
                 >
                     <Text style={[styles.tabText,
-                    currentCalendar === 'daily' && styles.activeTabText
+                    currentView === 'daily' && styles.activeTabText
                     ]}
                     >
                         Daily
@@ -35,11 +38,11 @@ const CalendarHeader = () => {
                 <TouchableOpacity
                 onPress={handleMonthly}
                 style={[styles.tabButton,
-                    currentCalendar === 'monthly' && styles.activeTab
+                    currentView === 'monthly' && styles.activeTab
                 ]}
                 >
                     <Text style={[styles.tabText,
-                    currentCalendar === 'monthly' && styles.activeTabText
+                    currentView === 'monthly' && styles.activeTabText
                     ]}
                     >
                         Monthly

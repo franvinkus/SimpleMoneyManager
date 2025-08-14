@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -7,29 +7,69 @@ import { useNavigation } from "@react-navigation/native";
 import BottomBar from "../../components/BottomBar";
 import CalendarHeader from "./components/calendarHeader";
 import { RootStackParamList } from "../../navigation/types";
+import DailyView from "./components/dailyView";
+import MonthlyView from "./components/monthlyView";
 
 const CalendarScreen = () => {
     const Navigate = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    const [currentView, setCurrentView] = useState<'daily' | 'monthly'>('daily');
+
+    const handleViewChange = (view: 'daily' | 'monthly') => {
+        setCurrentView(view);
+    };
     
+    const dummyDailyData = [
+      {
+        date: new Date('2025-08-11T10:00:00'), // Tanggal 11 Agustus 2025
+        total: 125000,
+        details: [
+            { itemName: "Makan Siang", itemPrice: 50000 },
+            { itemName: "Kopi", itemPrice: 25000 },
+            { itemName: "Transportasi", itemPrice: 50000 },
+        ]
+      },
+      {
+        date: new Date('2025-08-10T14:30:00'), // Tanggal 10 Agustus 2025
+        total: 75000,
+        details: [
+            { itemName: "Belanja Bulanan", itemPrice: 75000 },
+        ]
+      },
+      {
+        date: new Date('2025-08-09T20:15:00'), // Tanggal 9 Agustus 2025
+        total: 20000,
+        details: [
+            { itemName: "Jajan", itemPrice: 20000 },
+        ]
+      }
+    ];
+
+    const dummyMonthlyData = {
+        date: new Date('2025-08-01'), // Cukup tanggal 1 untuk mewakili bulan
+        details: dummyDailyData, // Gunakan data harian yang sudah ada
+    };
     
     return (
         <View style={{flex: 1}}>
-            <CalendarHeader/>
+            <CalendarHeader
+            currentView={currentView}
+            onViewChange={handleViewChange}
+            />
             <View style={{flex: 1}}>
                 <SafeAreaView style={[styles.safeViewArea]}>
                     <ScrollView contentInsetAdjustmentBehavior="automatic">
-                            <View>
-                                <Text style={{color: 'black'}}>
-                                    This is Calendar
-                                </Text>
-                            </View>
-                            <View style={styles.contentBox}>
-                                <Text style={styles.content}>
-                                  Di bawah cuma contoh doang biar tau muncul apa gak
-                                </Text>
-                                <Text style={styles.contentItem}>- View Summary</Text>
-                                <Text style={styles.contentItem}>- Add money juga belum</Text>
-                                <Text style={styles.contentItem}>- Buat Icon itu gua baru pake apa yang ada di laptop gua</Text>
+                            <View style={[styles.container]}>
+                                {currentView === 'daily' ? (
+                                    <ScrollView style={[styles.dataContainer]}>
+                                        {dummyDailyData.map((data, index) => (
+                                            <DailyView key={index} {...data}/>
+                                        ))}
+                                    </ScrollView>
+                                ) : (
+                                    <ScrollView style={[styles.dataContainer]}>
+                                        <MonthlyView  date={dummyMonthlyData.date} details={dummyMonthlyData.details}/>
+                                    </ScrollView>
+                                )}
                             </View>
                     </ScrollView>
                 </SafeAreaView>
@@ -43,6 +83,10 @@ const styles = StyleSheet.create({
     safeViewArea:{
         flex:1,
         backgroundColor: '#F8CEA8', 
+    },
+    container:{
+        alignItems: "center",
+        alignContent: "center",
     },
     backButton: {
         padding: 20,
@@ -79,6 +123,9 @@ const styles = StyleSheet.create({
         color: '#78909c',
         marginBottom: 5,
         marginLeft: 10,
+    },
+    dataContainer:{
+        width: "90%",
     }
 })
 
