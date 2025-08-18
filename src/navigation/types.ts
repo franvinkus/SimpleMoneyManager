@@ -11,6 +11,7 @@ export type RootStackParamList = {
     extractedTotal: string | null;
     extractedItems: ItemDetail[];
   };
+  Calendar: undefined;
 };
 
 export type ItemDetail = {
