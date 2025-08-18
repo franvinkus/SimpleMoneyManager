@@ -1,12 +1,18 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, Alert, TouchableOpacity } from 'react-native';
 import { RootStackParamList, ItemDetail } from '../../navigation/types'; 
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { saveTransaction } from '../../utils/transactionStorage';
+
 type ScanResultScreenRouteProp = RouteProp<RootStackParamList, 'SCANRESULT'>;
 
+type ScanResultScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'SCANRESULT'>;
 
 const ScanResultScreen = () => {
   const route = useRoute<ScanResultScreenRouteProp>();
+  // Terapkan tipe yang sudah dibuat ke useNavigation()
+  const navigation = useNavigation<ScanResultScreenNavigationProp>();
 
   const {
     storeName: initialStoreName,
@@ -20,20 +26,51 @@ const ScanResultScreen = () => {
   const [editableDate, setEditableDate] = useState(initialExtractedDate || 'N/A');
   const [editableTotal, setEditableTotal] = useState(initialExtractedTotal || 'N/A');
   const [editableItems, setEditableItems] = useState<ItemDetail[]>(initialExtractedItems || []);
+  const [isSaving, setIsSaving] = useState(false)
+
+  const handleSave = async () => {
+    if (isSaving) return;
+    setIsSaving(true);
+
+    const newTransaction = {
+      storeName: storeName,
+      date: editableDate,
+      total: editableTotal,
+      items: editableItems,
+    };
+
+    try {
+      await saveTransaction(newTransaction);
+  
+      Alert.alert(
+        'Sukses', 
+        'Transaksi berhasil disimpan!', 
+        [ 
+          { 
+            text: 'OK', 
+            onPress: () => navigation.navigate('Calendar') 
+          }
+        ]
+      );
+    } catch (error) {
+      Alert.alert('Error', 'Gagal menyimpan transaksi.');
+      console.error(error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.title}>{storeName}</Text>
 
-        {/* Bagian Detail Transaksi */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Detail Transaksi</Text>
           <Text style={styles.dataText}>Tanggal: {editableDate}</Text>
           <Text style={styles.dataText}>Total Belanja: Rp {editableTotal}</Text>
         </View>
 
-        {/* Bagian Daftar Barang */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Daftar Barang</Text>
           {editableItems.length > 0 ? (
@@ -51,11 +88,16 @@ const ScanResultScreen = () => {
           )}
         </View>
 
-        {/* Bagian Teks Mentah untuk Debugging */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Teks Mentah Hasil OCR</Text>
           <Text style={styles.rawText}>{rawOcrText || 'Tidak ada teks.'}</Text>
         </View>
+
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave} disabled={isSaving}>
+          <Text style={styles.saveButtonText}>
+            {isSaving ? 'Menyimpan...' : 'Simpan Transaksi'}
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -75,6 +117,19 @@ const styles = StyleSheet.create({
     color: '#333',
     textAlign: 'center',
     marginBottom: 24,
+  },
+  saveButton: {
+    backgroundColor: '#007BFF',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 10,
+    elevation: 3,
+  },
+  saveButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   section: {
     backgroundColor: 'white',
@@ -113,7 +168,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#333',
     flex: 1,
-    marginRight: 10,
+    marginHorizontal: 10,
   },
   itemPrice: {
     fontSize: 15,
