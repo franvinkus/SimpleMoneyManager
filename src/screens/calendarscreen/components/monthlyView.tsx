@@ -1,14 +1,10 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-
-interface dailyProps{
-    date: Date,
-    total: number,
-}
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { DailyData } from "../index"; 
 
 interface monthlyProps{
     date: Date,
-    details: dailyProps[]
+    details: DailyData[] 
 }
 
 const MonthlyView = ({ date, details }: monthlyProps) => {
@@ -17,6 +13,16 @@ const MonthlyView = ({ date, details }: monthlyProps) => {
       month: 'long',    
       year: 'numeric',  
     });
+
+    
+    const groupedByDate: { [key: string]: DailyData[] } = details.reduce((acc, current) => {
+        const dateKey = current.date.toLocaleDateString('id-ID');
+        if (!acc[dateKey]) {
+            acc[dateKey] = [];
+        }
+        acc[dateKey].push(current);
+        return acc;
+    }, {} as { [key: string]: DailyData[] });
 
     const totalMonthly = details.reduce((sum, currentDay) => {
         return sum + currentDay.total;
@@ -29,25 +35,26 @@ const MonthlyView = ({ date, details }: monthlyProps) => {
                     <Text style={[styles.textDate]}>{formattedDateMonthly}</Text>
                     <Text style={[styles.textTotal]}>Rp. {totalMonthly.toLocaleString('id-ID')}</Text>
                 </View>
+                
+                <View style={styles.divider} />
 
-                {details.length > 0 ? (
-                    details.map((days, index) => {
-                        const formattedDateDaily = days.date.toLocaleDateString('id-ID', {
-                        day: 'numeric',  
-                        month: 'long',    
-                        year: 'numeric',  
+                {Object.keys(groupedByDate).length > 0 ? (
+                    Object.keys(groupedByDate).map((dateKey, index) => {
+                        const dailyTotal = groupedByDate[dateKey].reduce((sum, item) => sum + item.total, 0);
+                        const displayDate = new Date(groupedByDate[dateKey][0].date).toLocaleDateString('id-ID', {
+                            day: 'numeric',
+                            month: 'long',
                         });
+
                         return (
-                        <View key={index} style={[styles.details]}>
-                            <Text style={[styles.itemName]}>{formattedDateDaily}: </Text>
-                            <Text style={[styles.itemPrice]}>Rp. {days.total.toLocaleString('id-ID')}</Text>
-                        </View>
-                    )
+                            <TouchableOpacity key={index} style={[styles.details]}>
+                                <Text style={[styles.itemName]}>{displayDate}</Text>
+                                <Text style={[styles.itemPrice]}>Rp. {dailyTotal.toLocaleString('id-ID')}</Text>
+                            </TouchableOpacity>
+                        )
                     })
                 ) : (
-                    <View>
-                        <Text style={[styles.textHeader]}>Tidak ada detail untuk barang hari ini.</Text>
-                    </View>
+                    <Text style={styles.noDetailsText}>Tidak ada transaksi bulan ini.</Text>
                 )}
             </View>
         </View>
@@ -56,15 +63,18 @@ const MonthlyView = ({ date, details }: monthlyProps) => {
 
 const styles = StyleSheet.create({
     background:{
-        flex: 1,
-        backgroundColor: 'grey',
+        backgroundColor: 'white',
         padding: 3,
-        borderRadius: 5,
-        marginTop: 10,
+        borderRadius: 10,
+        marginTop: 15,
         width: "100%",
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
     },
     container:{
-        padding: 10
+        padding: 15
     },
     textHeader:{
         flexDirection: "row",
@@ -72,21 +82,37 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     textDate:{
-        color:"white",
+        color:"#333",
+        fontSize: 18,
+        fontWeight: 'bold',
     },
     textTotal:{
-        color:"white",
-        fontStyle:"italic",
+        color:"#28a745",
+        fontWeight:"bold",
+        fontSize: 18,
+    },
+    divider: {
+        height: 1,
+        backgroundColor: '#eee',
+        marginBottom: 10,
     },
     details:{
         flexDirection:"row",
         justifyContent: "space-between",
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f0f0f0',
     },
     itemName:{
-
+        color: '#555',
+        fontWeight: '500',
     },
     itemPrice:{
-
+        color: '#555',
+    },
+    noDetailsText: {
+        color: '#888',
+        fontStyle: 'italic',
     }
 });
 
