@@ -8,14 +8,15 @@ interface propsDetail{
 
 interface dailyProps{
     id: string; 
-    storeName: string; 
+    storeName: string | null; 
     date: Date,
     total: number,
     details: propsDetail[],
     onDelete: (id: string) => void; 
+    type: 'income' | 'expense';
 }
 
-const DailyView = ({ id, storeName, date, total, details, onDelete }: dailyProps) => {
+const DailyView = ({ id, storeName, date, total, details, onDelete, type }: dailyProps) => {
 
     const formattedDate = date.toLocaleDateString('id-ID', {
       weekday: 'long', 
@@ -57,7 +58,7 @@ const DailyView = ({ id, storeName, date, total, details, onDelete }: dailyProps
 
                 <View style={[styles.textHeader]}>
                     <Text style={[styles.textDate]}>{formattedDate}</Text>
-                    <Text style={[styles.textTotal]}>Rp. {total.toLocaleString('id-ID')}</Text>
+                    <Text style={[styles.textTotal, type === 'expense' ? styles.negativeAmount : styles.positiveAmount]}>Rp. {total.toLocaleString('id-ID')}</Text>
                 </View>
 
                 <View style={styles.divider} />
@@ -83,6 +84,7 @@ const styles = StyleSheet.create({
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
+        marginBottom: 10,
     },
     container:{
         padding: 15
@@ -120,6 +122,12 @@ const styles = StyleSheet.create({
     textTotal:{
         color:"#28a745",
         fontWeight:"bold",
+    },
+    positiveAmount: {
+        color: '#28a745', 
+    },
+    negativeAmount: {
+        color: '#e74c3c', 
     },
     divider: {
         height: 1,

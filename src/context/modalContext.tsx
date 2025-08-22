@@ -1,15 +1,16 @@
 // src/context/ModalContext.tsx
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 
-type AddMoneyCallback = (amount: number) => void;
+export  type TransactionType = 'income' | 'expense';
+export  type TransactionCallback = (amount: number, type: TransactionType, date:Date) => void;
 
 interface ModalContextType {
-  requestAddMoneyModal: () => void; 
-  registerAddMoneyHandler: (handler: AddMoneyCallback) => void;
-  unregisterAddMoneyHandler: (handler: AddMoneyCallback) => void; 
-  isAddMoneyModalRequested: boolean;
-  onAddMoneyModalClose: () => void;
-  onAddMoneyModalSubmit: AddMoneyCallback; 
+  requestManualTransactionModal: () => void;
+  registerManualTransactionHandler: (handler: TransactionCallback) => void;
+  unregisterManualTransactionHandler: (handler: TransactionCallback) => void;
+  isManualTransactionModalRequested: boolean;
+  onManualTransactionModalClose: () => void;
+  onManualTransactionModalSubmit: TransactionCallback;
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
@@ -27,40 +28,39 @@ interface ModalProviderProps {
 }
 
 export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
-  const [isAddMoneyModalRequested, setIsAddMoneyModalRequested] = useState(false);
-  const [activeAddMoneyHandler, setActiveAddMoneyHandler] = useState<AddMoneyCallback | null>(null);
+  const [isManualTransactionModalRequested, setIsManualTransactionModalRequested] = useState(false);
+  const [activeTransactionHandler, setActiveTransactionHandler] = useState<TransactionCallback | null>(null);
 
-  const requestAddMoneyModal = useCallback(() => { //
-    setIsAddMoneyModalRequested(true);
+  const requestManualTransactionModal = useCallback(() => {
+    setIsManualTransactionModalRequested(true);
   }, []);
 
-  const registerAddMoneyHandler = useCallback((handler: AddMoneyCallback) => {
-    setActiveAddMoneyHandler(() => handler); 
+  const registerManualTransactionHandler = useCallback((handler: TransactionCallback) => {
+    setActiveTransactionHandler(() => handler);
   }, []);
 
-  const unregisterAddMoneyHandler = useCallback((handler: AddMoneyCallback) => {
-    setActiveAddMoneyHandler((prevHandler: AddMoneyCallback | null) => (prevHandler === handler ? null : prevHandler));
+  const unregisterManualTransactionHandler = useCallback((handler: TransactionCallback) => {
+    setActiveTransactionHandler((prevHandler: TransactionCallback | null) => (prevHandler === handler ? null : prevHandler));
   }, []);
 
-  const onAddMoneyModalSubmit = useCallback((amount: number) => {
-    if (activeAddMoneyHandler) { 
-      activeAddMoneyHandler(amount); 
+  const onManualTransactionModalSubmit = useCallback((amount: number, type: TransactionType, date: Date) => {
+    if (activeTransactionHandler) {
+      activeTransactionHandler(amount, type, date);
     }
-    onAddMoneyModalClose(); 
-  }, [activeAddMoneyHandler]); 
+    onManualTransactionModalClose();
+  }, [activeTransactionHandler]);
 
-  const onAddMoneyModalClose = useCallback(() => {
-    setIsAddMoneyModalRequested(false);
+  const onManualTransactionModalClose = useCallback(() => {
+    setIsManualTransactionModalRequested(false);
   }, []);
-
 
   const value = {
-    requestAddMoneyModal,
-    registerAddMoneyHandler,
-    unregisterAddMoneyHandler,
-    isAddMoneyModalRequested,
-    onAddMoneyModalClose,
-    onAddMoneyModalSubmit 
+    requestManualTransactionModal,
+    registerManualTransactionHandler,
+    unregisterManualTransactionHandler,
+    isManualTransactionModalRequested,
+    onManualTransactionModalClose,
+    onManualTransactionModalSubmit,
   };
 
   return <ModalContext.Provider value={value}>{children}</ModalContext.Provider>;

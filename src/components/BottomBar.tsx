@@ -10,10 +10,10 @@ import AddMoneyIcon from '../assets/icons/AddMoneyIcon.png'
 
 const BottomBar = () => {
     const navigation = useNavigation();
-    const { requestAddMoneyModal } = useModal(); 
+    const { requestManualTransactionModal  } = useModal(); 
 
     const handleAddMoneyPress = () => {
-        requestAddMoneyModal();
+        requestManualTransactionModal();
     };
     return (
         <View style={{height: 90, backgroundColor: "black"}}>

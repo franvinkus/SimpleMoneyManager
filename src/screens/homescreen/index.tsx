@@ -1,62 +1,148 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Alert } from 'react-native';
 import BottomBar from "../../components/BottomBar";
 import { useModal } from '../../context/modalContext';
-import AddMoney from '../../components/modals/AddMoney';
+import InputManualTransaction from '../../components/modals/InputManualTransaction';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { deleteTransaction, getTransactions, saveTransaction, Transaction } from '../../utils/transactionStorage';
+import { TransactionType } from '../../context/ModalContext';
+import { useFocusEffect } from '@react-navigation/native';
+import DailyView from '../calendarscreen/components/dailyView';
 const BALANCE_STORAGE_KEY = 'user_initial_balance';
+
+export interface DailyData {
+  id: string; 
+  storeName: string | null;
+  date: Date;
+  total: number;
+  type: 'income' | 'expense';
+  details: {
+    itemName: string;
+    itemPrice: number;
+  }[];
+}
+
 const HomeScreen = () => {
-  const [initialAmount, setInitialAmount] = useState<number>(0);
+  const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const {
-    isAddMoneyModalRequested,
-    onAddMoneyModalClose,
-    onAddMoneyModalSubmit,
-    registerAddMoneyHandler,
-    unregisterAddMoneyHandler
+    requestManualTransactionModal,
+    registerManualTransactionHandler,
+    unregisterManualTransactionHandler,
+    isManualTransactionModalRequested,
+    onManualTransactionModalClose,
+    onManualTransactionModalSubmit,
   } = useModal();
 
-  useEffect(() => {
-    const loadBalance = async () => {
-      try {
-        const storedAmount = await AsyncStorage.getItem(BALANCE_STORAGE_KEY);
-        if (storedAmount != null) {
-          setInitialAmount(parseFloat(storedAmount));
-        }
-      }
-      catch (error) {
-        console.error('Failed to load initial balance from AsyncStorage:', error);
-      }
-    }
+  const parseDateString = (dateStr: string | null): Date => {
+    if (!dateStr) return new Date();
 
-    loadBalance();
-  }, []);
-
-  const saveAmount = async (amount: number) => {
-    try {
-      await AsyncStorage.setItem(BALANCE_STORAGE_KEY, amount.toString());
-      console.log("berhasil save", amount);
-    }
-    catch (error) {
-      console.log("error tidak bisa save", error);
-    }
-  }
-
-  const handleAddMoney = useCallback((amount: number) => {
-    setInitialAmount(prevAmount => {
-      const newAmount = prevAmount + amount;
-      saveAmount(newAmount);
-      Alert.alert("Saldo berhasil ditambah", `saldo anda sekarang: Rp ${newAmount.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
-      return newAmount;
-    })
-  }, []);
-
-  useEffect(() => {
-    registerAddMoneyHandler(handleAddMoney);
-
-    return () => {
-      unregisterAddMoneyHandler(handleAddMoney);
+    const monthMap: { [key: string]: string } = {
+        jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06',
+        jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12',
+        januari: '01', februari: '02', maret: '03', april: '04', mei: '05', juni: '06',
+        juli: '07', agustus: '08', september: '09', oktober: '10', november: '11', desember: '12'
     };
-  }, [handleAddMoney, registerAddMoneyHandler, unregisterAddMoneyHandler]);
+
+    const cleanedDateStr = dateStr.toLowerCase().replace(/[,.]/g, '');
+    const parts = cleanedDateStr.split(/[\s-/]/); 
+    if (parts.length === 3) {
+        let [day, month, year] = parts;
+
+        
+        if (isNaN(parseInt(month, 10))) {
+            month = monthMap[month.substring(0, 3)];
+        }
+
+       
+        if (month && month.length === 1) month = '0' + month;
+        if (day && day.length === 1) day = '0' + day;
+
+      
+        if (year && year.length === 2) year = '20' + year;
+
+       
+        const dateFormats = [`${year}-${month}-${day}`, `${year}-${day}-${month}`];
+        for (const format of dateFormats) {
+            const date = new Date(format);
+            if (!isNaN(date.getTime())) {
+                return date;
+            }
+        }
+    }
+
+    const directParse = new Date(dateStr);
+    if (!isNaN(directParse.getTime())) {
+        return directParse;
+    }
+
+    return new Date(); 
+};
+
+  const loadTransactions = async () => {
+        const data = await getTransactions();
+        setAllTransactions(data);
+    };
+
+  useFocusEffect(
+        React.useCallback(() => {
+            loadTransactions();
+        }, [])
+    );
+
+   const { formattedData, netBalance } = useMemo(() => {
+      let balance = 0;
+      const mappedData = allTransactions.map(transaction => {
+        const amount = parseFloat(transaction.total.replace(/[^0-9,]/g, '').replace(',', '.')) || 0;
+        if (transaction.type === 'income') {
+          balance += amount;
+        } else {
+          balance -= amount;
+        }
+        return {
+          id: transaction.id, 
+          storeName: transaction.storeName,
+          date: parseDateString(transaction.date), 
+          total: amount,
+          type: transaction.type, // Tambahkan type ke DailyData
+          details: transaction.items.map(item => ({
+            itemName: item.name,
+            itemPrice: item.totalItemPrice || 0,
+          })),
+        };
+      }).sort((a, b) => b.date.getTime() - a.date.getTime()); 
+      return { formattedData: mappedData, netBalance: balance };
+    }, [allTransactions]);
+
+    const latestTransactions = useMemo(() => {
+        return formattedData.slice(0, 3);
+    }, [formattedData]);
+
+  const handleDelete = async (idToDelete: string) => {
+      await deleteTransaction(idToDelete);
+      await loadTransactions();
+  };
+
+
+ const handleManualTransaction = useCallback(async (amount: number, type: TransactionType) => {
+        const newTransaction: Omit<Transaction, 'id'> = {
+            storeName: 'Transaksi Manual',
+            date: new Date().toISOString(),
+            total: amount.toString(), // Simpan amount sebagai string
+            items: [],
+            type: type
+        };
+        await saveTransaction(newTransaction);
+        await loadTransactions(); // Muat ulang data setelah simpan
+        Alert.alert("Konfirmasi", `Transaksi ${type} berhasil. Saldo Anda diperbarui.`);
+    }, []);
+
+
+  useEffect(() => {
+    registerManualTransactionHandler(handleManualTransaction);
+    return () => {
+      unregisterManualTransactionHandler(handleManualTransaction);
+    };
+  }, [handleManualTransaction, registerManualTransactionHandler, unregisterManualTransactionHandler]);
 
 
   return (
@@ -68,26 +154,32 @@ const HomeScreen = () => {
             <View style={styles.balanceContainer}>
               <Text style={styles.netBalanceTitle}>Net Balance</Text>
               <Text style={styles.netBalanceAmount}>
-                Rp {initialAmount.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                Rp {netBalance.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </Text>
             </View>
-            <View style={styles.contentBox}>
-              <Text style={styles.content}>
-                fitur yang harus dibentuk
-              </Text>
-              <Text style={styles.contentItem}>- Scan Resi (Fitur OCR) kameranya udh jadi, bisa langsung test aja, hasilnya juga masih preview itu nanti gua mau lanjut</Text>
-              <Text style={styles.contentItem}>- View Summary</Text>
-              <Text style={styles.contentItem}>- Add money juga belum</Text>
-              <Text style={styles.contentItem}>- Buat Icon itu gua baru pake apa yang ada di laptop gua</Text>
-            </View>
+
+            <Text style={styles.recentTransactionsTitle}>Transaksi Terbaru</Text>
+            <View style={styles.latestTransactionsContainer}>
+                {latestTransactions.length === 0 ? (
+                    <Text style={styles.emptyText}>Belum ada transaksi.</Text>
+                ) : (
+                    latestTransactions.map((data) => (
+                        <DailyView 
+                            key={data.id} 
+                            {...data} 
+                            onDelete={handleDelete} 
+                        />
+                    ))
+                )}
+              </View>
           </View>
         </ScrollView>
 
-        {isAddMoneyModalRequested && (
-          <AddMoney
+        {isManualTransactionModalRequested && (
+          <InputManualTransaction
             isInvisible={true}
-            onClose={onAddMoneyModalClose}
-            onAddMoney={onAddMoneyModalSubmit}
+            onClose={onManualTransactionModalClose}
+            onConfirm={onManualTransactionModalSubmit}
           />
         )}
 
@@ -124,30 +216,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 30,
   },
-  contentBox: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    width: '90%',
-    alignItems: 'flex-start',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  content: {
-    fontSize: 16,
-    color: '#546e7a',
-    marginBottom: 10,
-  },
-  contentItem: {
-    fontSize: 14,
-    color: '#78909c',
-    marginBottom: 5,
-    marginLeft: 10,
-  },
   balanceContainer: {
     backgroundColor: '#FFEACF',
     padding: 20,
@@ -170,6 +238,22 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontWeight: 'bold',
     textAlign: 'right',
+  },
+  recentTransactionsTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginTop: 30,
+        marginBottom: 10,
+        color: '#263238',
+        alignSelf: 'flex-start',
+  },
+  latestTransactionsContainer: {
+      width: '100%',
+  },
+  emptyText: { 
+    marginTop: 50, 
+    color: 'grey', 
+    fontSize: 16 
   },
 });
 
