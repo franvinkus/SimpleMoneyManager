@@ -2,17 +2,22 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+// CATATAN: Import di bawah ini diasumsikan ada di proyek Anda.
 import { RootStackParamList } from '../../navigation/types';
 import { recognizeReceiptText } from '../../utils/ocrUtils';
 import { parseReceiptText } from '../../utils/receiptParser';
 
+// Interface untuk logika perangkaian teks per elemen
 interface TextElement {
   text: string;
   boundingBox: [number, number, number, number]; 
 }
+
 interface TextLine {
   elements: TextElement[];
+  text: string;
 }
+
 interface TextBlock {
   lines: TextLine[];
 }
@@ -31,23 +36,32 @@ const OcrScreen = () => {
         try {
             const mlKitResult = await recognizeReceiptText(photoPath);
 
+            // ===================================================================
+            // MENGEMBALIKAN LOGIKA PERANGKAIAN TEKS YANG LAMA SESUAI PERMINTAAN
+            // ===================================================================
             if (mlKitResult && mlKitResult.blocks && mlKitResult.blocks.length > 0) {
-
                 const allElements: TextElement[] = [];
                 for (const block of mlKitResult.blocks) {
                     for (const line of block.lines) {
-                        allElements.push(...(line.elements || []));
+                        // Pastikan line.elements ada sebelum di-spread
+                        if (line.elements) {
+                            allElements.push(...line.elements);
+                        }
                     }
                 }
+
                 const groupedLines = new Map<number, TextElement[]>();
-                const Y_TOLERANCE = 10; 
+                const Y_TOLERANCE = 10; // Toleransi untuk mengelompokkan elemen dalam baris yang sama
 
                 allElements.forEach(element => {
                     const yPos = element.boundingBox[1];
                     let foundGroup = false;
                     for (const key of groupedLines.keys()) {
                         if (Math.abs(key - yPos) < Y_TOLERANCE) {
-                            groupedLines.get(key)?.push(element);
+                            const lineElements = groupedLines.get(key);
+                            if(lineElements) {
+                                lineElements.push(element);
+                            }
                             foundGroup = true;
                             break;
                         }
@@ -58,10 +72,10 @@ const OcrScreen = () => {
                 });
 
                 const sortedLines = Array.from(groupedLines.entries())
-                    .sort((a, b) => a[0] - b[0])
+                    .sort((a, b) => a[0] - b[0]) // Urutkan baris dari atas ke bawah
                     .map(([, elements]) =>
                         elements
-                            .sort((a, b) => a.boundingBox[0] - b.boundingBox[0]) 
+                            .sort((a, b) => a.boundingBox[0] - b.boundingBox[0]) // Urutkan elemen per baris dari kiri ke kanan
                             .map(el => el.text)
                             .join(' ')
                     );
@@ -131,10 +145,11 @@ const styles = StyleSheet.create({
     button: { backgroundColor: '#F8CEA8', paddingVertical: 15, borderRadius: 10, alignItems: 'center' },
     buttonText: { fontSize: 18, fontWeight: '600', color: '#333' },
     resultScrollView: { maxHeight: 200, marginTop: 20 },
-    resultBox: { backgroundColor: '#2a2a2a', padding: 15, borderRadius: 10 },
+    resultBox: { backgroundColor: '#2a2a2a', padding: 15, borderRadius: 10, position: 'relative' },
     resultTitle: { color: '#F8CEA8', fontSize: 16, fontWeight: 'bold', marginBottom: 10 },
-    resultText: { color: 'white', fontSize: 14, fontFamily: 'monospace' },
+    resultText: { color: 'white', fontSize: 14, fontFamily: 'monospace', whiteSpace: 'pre-wrap' },
     acceptButton: { position: 'absolute', bottom: 15, right: 15, padding: 15, backgroundColor: '#000000aa', borderRadius: 30 },
 });
 
 export default OcrScreen;
+
