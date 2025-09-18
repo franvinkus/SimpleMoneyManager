@@ -6,6 +6,7 @@ import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, Touchabl
 import { RootStackParamList } from '../../navigation/types';
 import { recognizeReceiptText } from '../../utils/ocrUtils';
 import { parseReceiptText } from '../../utils/receiptParser';
+import { preprocessImageForOCR } from '../../utils/imageProcessingUtils';
 
 // Interface untuk logika perangkaian teks per elemen
 interface TextElement {
@@ -34,11 +35,11 @@ const OcrScreen = () => {
         setIsLoading(true);
         setResultText(null);
         try {
-            const mlKitResult = await recognizeReceiptText(photoPath);
 
-            // ===================================================================
-            // MENGEMBALIKAN LOGIKA PERANGKAIAN TEKS YANG LAMA SESUAI PERMINTAAN
-            // ===================================================================
+            const preprocessedPath = await preprocessImageForOCR(photoPath);
+
+            const mlKitResult = await recognizeReceiptText(preprocessedPath);
+
             if (mlKitResult && mlKitResult.blocks && mlKitResult.blocks.length > 0) {
                 const allElements: TextElement[] = [];
                 for (const block of mlKitResult.blocks) {
