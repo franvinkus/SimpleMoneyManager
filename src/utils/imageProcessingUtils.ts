@@ -53,18 +53,25 @@ export const preprocessImageForOCR = async (imagePath: string): Promise<string> 
         }
 
         if (needsAdjustment) {
-            console.log(`[PREPROCESS] Applying brightness filter with amount: ${adjustmentAmount}`);
+            console.log(`[PREPROCESS] Applying brightness, contrast, and grayscale filters.`);
             
-            // --- PERBAIKAN AKHIR: Bypass pemeriksaan tipe dengan `as any` ---
+            // Gabungkan beberapa aksi manipulasi dalam satu array
+            const actions = [
+                { brightness: adjustmentAmount }, // Terapkan penyesuaian kecerahan
+                { contrast: 1.2 },               // Tingkatkan kontras sedikit (nilai > 1)
+                { grayscale: 1 }                 // Ubah menjadi hitam-putih (nilai 1)
+            ];
+
             const result = await ImageManipulator.manipulateAsync(
                 imageUri,
-                [{ brightness: adjustmentAmount }], 
-                { format: ImageManipulator.SaveFormat.JPEG }
+                actions, // Gunakan array aksi yang baru
+                { format: ImageManipulator.SaveFormat.JPEG, compress: 0.9 } // Kompresi 0.9 untuk kualitas baik
             );
             
             console.log("[PREPROCESS] Adjustment finished. New image path:", result.uri);
             return result.uri.replace('file://', '');
         }
+
 
         return imagePath;
     } catch (error) {

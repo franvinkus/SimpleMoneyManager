@@ -1,0 +1,341 @@
+diff --git a/node_modules/react-native-image-manipulator/android/build.gradle b/node_modules/react-native-image-manipulator/android/build.gradle
+index 3a1a548..4725d24 100644
+--- a/node_modules/react-native-image-manipulator/android/build.gradle
++++ b/node_modules/react-native-image-manipulator/android/build.gradle
+@@ -1,24 +1,22 @@
++// node_modules/react-native-image-manipulator/android/build.gradle
++// KODE BARU YANG SUDAH DIPERBAIKI
+ 
+-buildscript {
+-    repositories {
+-        google()
+-        jcenter()
+-    }
++apply plugin: 'com.android.library'
+ 
+-    dependencies {
+-        classpath 'com.android.tools.build:gradle:3.3.1'
+-    }
++// Fungsi helper untuk mengambil variabel dari proyek utama dengan aman
++def safeExtGet(prop, fallback) {
++    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+ }
+ 
+-apply plugin: 'com.android.library'
+-
+ android {
+-    compileSdkVersion 28
+-    buildToolsVersion "28.0.3"
++    // Ambil versi SDK dari konfigurasi utama proyek Anda
++    compileSdkVersion safeExtGet('compileSdkVersion', 34)
++    buildToolsVersion safeExtGet('buildToolsVersion', '34.0.0')
+ 
+     defaultConfig {
+-        minSdkVersion 16
+-        targetSdkVersion 28
++        // Ambil versi SDK dari konfigurasi utama proyek Anda
++        minSdkVersion safeExtGet('minSdkVersion', 21)
++        targetSdkVersion safeExtGet('targetSdkVersion', 34)
+         versionCode 1
+         versionName "1.0"
+     }
+@@ -27,10 +25,6 @@ android {
+     }
+ }
+ 
+-repositories {
+-    mavenCentral()
+-}
+-
+ dependencies {
+     implementation 'com.facebook.react:react-native:+'
+ }
+\ No newline at end of file
+diff --git a/node_modules/react-native-image-manipulator/android/build/.transforms/34deff3b2048dd81b942516741157bdb/results.bin b/node_modules/react-native-image-manipulator/android/build/.transforms/34deff3b2048dd81b942516741157bdb/results.bin
+new file mode 100644
+index 0000000..0d259dd
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/.transforms/34deff3b2048dd81b942516741157bdb/results.bin
+@@ -0,0 +1 @@
++o/classes
+diff --git a/node_modules/react-native-image-manipulator/android/build/.transforms/34deff3b2048dd81b942516741157bdb/transformed/classes/classes_dex/classes.dex b/node_modules/react-native-image-manipulator/android/build/.transforms/34deff3b2048dd81b942516741157bdb/transformed/classes/classes_dex/classes.dex
+new file mode 100644
+index 0000000..aebaf87
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/.transforms/34deff3b2048dd81b942516741157bdb/transformed/classes/classes_dex/classes.dex differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/results.bin b/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/results.bin
+new file mode 100644
+index 0000000..7ed749e
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/results.bin
+@@ -0,0 +1 @@
++o/bundleLibRuntimeToDirDebug
+diff --git a/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tabakharniuk/rnimagemanipulator/BuildConfig.dex b/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tabakharniuk/rnimagemanipulator/BuildConfig.dex
+new file mode 100644
+index 0000000..52d611f
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tabakharniuk/rnimagemanipulator/BuildConfig.dex differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule$1.dex b/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule$1.dex
+new file mode 100644
+index 0000000..65a3f87
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule$1.dex differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule.dex b/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule.dex
+new file mode 100644
+index 0000000..f11db5d
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule.dex differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorPackage.dex b/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorPackage.dex
+new file mode 100644
+index 0000000..7713f9d
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorPackage.dex differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin b/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin
+new file mode 100644
+index 0000000..b72a99b
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/.transforms/f8798f1fe845642fedadae2466df1c29/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/generated/source/buildConfig/debug/com/tabakharniuk/rnimagemanipulator/BuildConfig.java b/node_modules/react-native-image-manipulator/android/build/generated/source/buildConfig/debug/com/tabakharniuk/rnimagemanipulator/BuildConfig.java
+new file mode 100644
+index 0000000..b099aef
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/generated/source/buildConfig/debug/com/tabakharniuk/rnimagemanipulator/BuildConfig.java
+@@ -0,0 +1,10 @@
++/**
++ * Automatically generated file. DO NOT MODIFY
++ */
++package com.tabakharniuk.rnimagemanipulator;
++
++public final class BuildConfig {
++  public static final boolean DEBUG = Boolean.parseBoolean("true");
++  public static final String LIBRARY_PACKAGE_NAME = "com.tabakharniuk.rnimagemanipulator";
++  public static final String BUILD_TYPE = "debug";
++}
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml b/node_modules/react-native-image-manipulator/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+new file mode 100644
+index 0000000..99b0a53
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.tabakharniuk.rnimagemanipulator" >
++
++    <uses-sdk android:minSdkVersion="24" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json b/node_modules/react-native-image-manipulator/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+new file mode 100644
+index 0000000..f601204
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+@@ -0,0 +1,18 @@
++{
++  "version": 3,
++  "artifactType": {
++    "type": "AAPT_FRIENDLY_MERGED_MANIFESTS",
++    "kind": "Directory"
++  },
++  "applicationId": "com.tabakharniuk.rnimagemanipulator",
++  "variantName": "debug",
++  "elements": [
++    {
++      "type": "SINGLE",
++      "filters": [],
++      "attributes": [],
++      "outputFile": "AndroidManifest.xml"
++    }
++  ],
++  "elementType": "File"
++}
+\ No newline at end of file
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties b/node_modules/react-native-image-manipulator/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+new file mode 100644
+index 0000000..1211b1e
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+@@ -0,0 +1,6 @@
++aarFormatVersion=1.0
++aarMetadataVersion=1.0
++minCompileSdk=1
++minCompileSdkExtension=0
++minAndroidGradlePluginVersion=1.0.0
++coreLibraryDesugaringEnabled=false
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json b/node_modules/react-native-image-manipulator/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+new file mode 100644
+index 0000000..9e26dfe
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+@@ -0,0 +1 @@
++{}
+\ No newline at end of file
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar b/node_modules/react-native-image-manipulator/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar
+new file mode 100644
+index 0000000..f831d43
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar b/node_modules/react-native-image-manipulator/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar
+new file mode 100644
+index 0000000..9fdd3ea
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt b/node_modules/react-native-image-manipulator/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties b/node_modules/react-native-image-manipulator/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+new file mode 100644
+index 0000000..a3b7e87
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+@@ -0,0 +1 @@
++#Fri Sep 19 19:59:50 WIB 2025
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml b/node_modules/react-native-image-manipulator/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+new file mode 100644
+index 0000000..cc45b2a
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\main\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\main\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\debug\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\debug\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\build\generated\res\resValues\debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\build\generated\res\resValues\debug"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/react-native-image-manipulator/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+new file mode 100644
+index 0000000..7b72549
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\main\jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\debug\jniLibs"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/react-native-image-manipulator/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+new file mode 100644
+index 0000000..b352536
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\main\shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\debug\shaders"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/incremental/packageDebugAssets/merger.xml b/node_modules/react-native-image-manipulator/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+new file mode 100644
+index 0000000..922e9e5
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\main\assets"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\debug\assets"/></dataSet><dataSet config="generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\build\intermediates\shader_assets\debug\compileDebugShaders\out"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tabakharniuk/rnimagemanipulator/BuildConfig.class b/node_modules/react-native-image-manipulator/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tabakharniuk/rnimagemanipulator/BuildConfig.class
+new file mode 100644
+index 0000000..edebb42
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tabakharniuk/rnimagemanipulator/BuildConfig.class differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule$1.class b/node_modules/react-native-image-manipulator/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule$1.class
+new file mode 100644
+index 0000000..cb26936
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule$1.class differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule.class b/node_modules/react-native-image-manipulator/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule.class
+new file mode 100644
+index 0000000..bdc8d9c
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule.class differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorPackage.class b/node_modules/react-native-image-manipulator/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorPackage.class
+new file mode 100644
+index 0000000..1c34ef3
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorPackage.class differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt b/node_modules/react-native-image-manipulator/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+new file mode 100644
+index 0000000..78ac5b8
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+@@ -0,0 +1,2 @@
++R_DEF: Internal format may change without notice
++local
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt b/node_modules/react-native-image-manipulator/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+new file mode 100644
+index 0000000..d5ab742
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+@@ -0,0 +1,7 @@
++1<?xml version="1.0" encoding="utf-8"?>
++2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++3    package="com.tabakharniuk.rnimagemanipulator" >
++4
++5    <uses-sdk android:minSdkVersion="24" />
++6
++7</manifest>
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml b/node_modules/react-native-image-manipulator/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+new file mode 100644
+index 0000000..99b0a53
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.tabakharniuk.rnimagemanipulator" >
++
++    <uses-sdk android:minSdkVersion="24" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json b/node_modules/react-native-image-manipulator/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+new file mode 100644
+index 0000000..0637a08
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+@@ -0,0 +1 @@
++[]
+\ No newline at end of file
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt b/node_modules/react-native-image-manipulator/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+new file mode 100644
+index 0000000..08f4ebe
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+@@ -0,0 +1 @@
++0 Warning/Error
+\ No newline at end of file
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tabakharniuk/rnimagemanipulator/BuildConfig.class b/node_modules/react-native-image-manipulator/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tabakharniuk/rnimagemanipulator/BuildConfig.class
+new file mode 100644
+index 0000000..edebb42
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tabakharniuk/rnimagemanipulator/BuildConfig.class differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule$1.class b/node_modules/react-native-image-manipulator/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule$1.class
+new file mode 100644
+index 0000000..cb26936
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule$1.class differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule.class b/node_modules/react-native-image-manipulator/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule.class
+new file mode 100644
+index 0000000..bdc8d9c
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorModule.class differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorPackage.class b/node_modules/react-native-image-manipulator/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorPackage.class
+new file mode 100644
+index 0000000..1c34ef3
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tabakharniuk/rnimagemanipulator/RNImageManipulatorPackage.class differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar b/node_modules/react-native-image-manipulator/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar
+new file mode 100644
+index 0000000..f9ca449
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar differ
+diff --git a/node_modules/react-native-image-manipulator/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt b/node_modules/react-native-image-manipulator/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+new file mode 100644
+index 0000000..35821d0
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+@@ -0,0 +1 @@
++com.tabakharniuk.rnimagemanipulator
+diff --git a/node_modules/react-native-image-manipulator/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/react-native-image-manipulator/android/build/outputs/logs/manifest-merger-debug-report.txt
+new file mode 100644
+index 0000000..86ff4fa
+--- /dev/null
++++ b/node_modules/react-native-image-manipulator/android/build/outputs/logs/manifest-merger-debug-report.txt
+@@ -0,0 +1,17 @@
++-- Merging decision tree log ---
++manifest
++ADDED from C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\main\AndroidManifest.xml:1:1-127
++INJECTED from C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\main\AndroidManifest.xml:1:1-127
++	package
++		ADDED from C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\main\AndroidManifest.xml:1:70-115
++		INJECTED from C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\main\AndroidManifest.xml
++	xmlns:android
++		ADDED from C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\main\AndroidManifest.xml:1:11-69
++uses-sdk
++INJECTED from C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\main\AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\main\AndroidManifest.xml
++INJECTED from C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\main\AndroidManifest.xml
++	android:targetSdkVersion
++		INJECTED from C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\main\AndroidManifest.xml
++	android:minSdkVersion
++		INJECTED from C:\Users\vince\Desktop\Moma\SimpleMoneyManager\node_modules\react-native-image-manipulator\android\src\main\AndroidManifest.xml
+diff --git a/node_modules/react-native-image-manipulator/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/react-native-image-manipulator/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
+new file mode 100644
+index 0000000..847d6c1
+Binary files /dev/null and b/node_modules/react-native-image-manipulator/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
