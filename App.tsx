@@ -16,42 +16,23 @@ import { ModalProvider } from './src/context/modalContext';
 
 const App = () => {
 
-  const [firebaseReady, setFirebaseReady] = useState(false); 
-
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-
-    const checkInitialization = () => {
-      console.log('Checking Firebase initialization status...');
-      console.log('Current firebase.apps.length:', firebase.apps.length); // Log nilai ini
-
-      if (firebase.apps.length > 0) {
-        console.log('Firebase now detected as initialized (via interval).');
-        setFirebaseReady(true);
-        if (intervalId) {
-          clearInterval(intervalId); // Hentikan interval setelah siap
-        }
-      } else {
-        console.log('Firebase still not detected, retrying...');
-      }
-    };
-
-    // Panggil sekali saat mount, lalu ulangi dengan interval
-    intervalId = setInterval(checkInitialization, 500); // Coba setiap 500ms
-
-    // Cleanup interval saat komponen unmount
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, []);
-
-  if (!firebaseReady) {
+  if (firebase.apps.length === 0) {
+    // Jika Firebase belum siap, tampilkan layar loading.
+    // Ini juga bisa terjadi jika ada masalah di setup native.
+    console.error('Firebase has not been initialized. Check native setup.');
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
-        <Text style={styles.loadingText}>Loading Firebase...</Text>
+        <Text style={styles.loadingText}>Initializing App...</Text>
+      </View>
+    );
+  }
+
+  if (!firebase) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={styles.loadingText}>Initializing App...</Text>
       </View>
     );
   }

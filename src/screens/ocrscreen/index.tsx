@@ -36,9 +36,9 @@ const OcrScreen = () => {
         setResultText(null);
         try {
 
-            const preprocessedPath = await preprocessImageForOCR(photoPath);
+            // const preprocessedPath = await preprocessImageForOCR(photoPath);
 
-            const mlKitResult = await recognizeReceiptText(preprocessedPath);
+            const mlKitResult = await recognizeReceiptText(photoPath);
 
             if (mlKitResult && mlKitResult.blocks && mlKitResult.blocks.length > 0) {
                 const allElements: TextElement[] = [];
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     resultScrollView: { maxHeight: 200, marginTop: 20 },
     resultBox: { backgroundColor: '#2a2a2a', padding: 15, borderRadius: 10, position: 'relative' },
     resultTitle: { color: '#F8CEA8', fontSize: 16, fontWeight: 'bold', marginBottom: 10 },
-    resultText: { color: 'white', fontSize: 14, fontFamily: 'monospace', whiteSpace: 'pre-wrap' },
+    resultText: { color: 'white', fontSize: 14, fontFamily: 'monospace', },
     acceptButton: { position: 'absolute', bottom: 15, right: 15, padding: 15, backgroundColor: '#000000aa', borderRadius: 30 },
 });
 

@@ -1,0 +1,5 @@
+{
+  "react-native": {
+    "ml_on_device_text_recognizer_enabled": true
+  }
+}
